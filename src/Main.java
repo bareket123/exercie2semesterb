@@ -91,89 +91,91 @@ public class Main {
         int optionFromMenu=0;
         Scanner scanner=new Scanner(System.in);
         System.out.println("You connected successfully!! what would you like to do?");
+        try {
+            do {
+                PrintMenuAfterLogIn();
 
-        do {
-            PrintMenuAfterLogIn();
-            try {
-                optionFromMenu=scanner.nextInt();
-            }catch (InputMismatchException inputMismatchException){
-                System.out.println("you enter invalid value, please enter a number");
-            }
+                optionFromMenu = scanner.nextInt();
 
-             optionFromMenu=invalidChoice(optionFromMenu,Constants.FIRST_OPTION_IN_MENU,Constants.LAST_OPTION_IN_USER_MENU);
-            switch (optionFromMenu) {
-                case Constants.VIEW_ALL_SERIES:
-                    Series[] allSeriesInNetflix = managementSystem.getListOfSeries();
-                    System.out.println("Here you can view all the series:\n");
-                    for (int i = 0; i < allSeriesInNetflix.length; i++) {
-                        if (allSeriesInNetflix[i] != null) {
-                            System.out.println(i + "." + allSeriesInNetflix[i].getName());
-                            System.out.println();
+                optionFromMenu = invalidChoice(optionFromMenu, Constants.FIRST_OPTION_IN_MENU, Constants.LAST_OPTION_IN_USER_MENU);
+                switch (optionFromMenu) {
+                    case Constants.VIEW_ALL_SERIES:
+                        Series[] allSeriesInNetflix = managementSystem.getListOfSeries();
+                        System.out.println("Here you can view all the series:\n");
+                        for (int i = 0; i < allSeriesInNetflix.length; i++) {
+                            if (allSeriesInNetflix[i] != null) {
+                                System.out.println(i + "." + allSeriesInNetflix[i].getName());
+                                System.out.println();
+                            }
                         }
-                    }
-                    break;
-                case Constants.VIEW_USER_SERIES:
-                      int counterUnwatchedSeries=0;
-                    if (account != null) {
-                        for (WatchedSeries watchedSeries : account.getWatchedSeries()) {
-                            if (watchedSeries != null) {
-                                watchedSeries.print();
-                            }else{
-                                counterUnwatchedSeries++;
+                        break;
+                    case Constants.VIEW_USER_SERIES:
+                        int counterUnwatchedSeries = 0;
+                        if (account != null) {
+                            for (WatchedSeries watchedSeries : account.getWatchedSeries()) {
+                                if (watchedSeries != null) {
+                                    watchedSeries.print();
+                                } else {
+                                    counterUnwatchedSeries++;
+                                }
+
+
                             }
 
 
                         }
+                        if (counterUnwatchedSeries == account.getWatchedSeries().length)
+                            System.out.println("you haven't started watching any series");
+                        System.out.println("//////////////////////////////////////");
 
 
-                    }if (counterUnwatchedSeries== account.getWatchedSeries().length)
-                    System.out.println("you haven't started watching any series");
-                    System.out.println("//////////////////////////////////////");
+                        break;
+                    case Constants.VIEW_USER_INFORMATION:
+                        account.print();
+                        break;
+                    case Constants.CHOOSE_SERIES_TO_WATCH:
+                        System.out.println("what would you like to watch (write the name of the series with Capital letters)?");
+                        scanner.nextLine();
+                        String seriesToWatch = scanner.nextLine();
+                        Series wantedSeries = managementSystem.checkIfSeriesExist(seriesToWatch);
+                        if (wantedSeries != null) {
+                            //if the series the function(isSeriesWatched)return isn't null-then show the episodes,else- series isn't exist-print message
+                            if (account.isSeriesWatched(seriesToWatch, managementSystem) != null) {
+                                WatchedSeries watchedSeries = account.isSeriesWatched(seriesToWatch, managementSystem);
+                                int lastWatchedEpisode = watchedSeries.getLastWatchedEpisode();
+                                System.out.println("Here is the last watched episode in the series you wanted:");
+                                watchedSeries.getSeries().getListOfEpisodes()[lastWatchedEpisode - 1].print();
+                            } else {
+                                System.out.println("we found the series you liked to watch, here you can view all the exist episodes:");
+                                System.out.println();
+                                for (Episode episode : wantedSeries.getListOfEpisodes()) {
+                                    if (episode != null)
+                                        episode.print();
 
+                                }
+                                episodeToWatched(wantedSeries, account);
 
-                    break;
-                case Constants.VIEW_USER_INFORMATION:
-                    account.print();
-                       break;
-                case Constants.CHOOSE_SERIES_TO_WATCH:
-                    System.out.println("what would you like to watch (write the name of the series with Capital letters)?");
-                    scanner.nextLine();
-                    String seriesToWatch=scanner.nextLine();
-                    Series wantedSeries =managementSystem.checkIfSeriesExist(seriesToWatch);
-                    if (wantedSeries!=null){
-                        //if the series the function(isSeriesWatched)return isn't null-then show the episodes,else- series isn't exist-print message
-                        if (account.isSeriesWatched(seriesToWatch,managementSystem)!=null){
-                            WatchedSeries watchedSeries=account.isSeriesWatched(seriesToWatch,managementSystem);
-                           int lastWatchedEpisode =watchedSeries.getLastWatchedEpisode();
-                            System.out.println("Here is the last watched episode in the series you wanted:");
-                           watchedSeries.getSeries().getListOfEpisodes()[lastWatchedEpisode-1].print();
-                        }else {
-                            System.out.println("we found the series you liked to watch, here you can view all the exist episodes:");
-                            System.out.println();
-                            for (Episode episode:wantedSeries.getListOfEpisodes()) {
-                                if (episode!=null)
-                                    episode.print();
 
                             }
-                            episodeToWatched(wantedSeries,account);
 
+                        } else
+                            System.out.println("We sorry, we don't own the series you want to watched");
 
-                        }
+                        System.out.println("*************************************");
+                        break;
+                    case 5:
+                        break;
+                    default:
+                        optionFromMenu = invalidChoice(optionFromMenu, Constants.FIRST_OPTION_IN_MENU, Constants.LAST_OPTION_IN_USER_MENU);
 
-                    }else
-                        System.out.println("We sorry, we don't own the series you want to watched");
+                }
 
-                    System.out.println("*************************************");
-                    break;
-                case 5:
-                    break;
-                default:
-                    optionFromMenu=invalidChoice(optionFromMenu,Constants.FIRST_OPTION_IN_MENU,Constants.LAST_OPTION_IN_USER_MENU);
+            } while (optionFromMenu < Constants.LAST_OPTION_IN_USER_MENU);
+
+        } catch (InputMismatchException inputMismatchException){
+                System.out.println("you enter invalid value, you must enter a number");
 
             }
-
-                }while (optionFromMenu<Constants.LAST_OPTION_IN_USER_MENU);
-
 
 
         }public static Account signToExistAccount2() {
