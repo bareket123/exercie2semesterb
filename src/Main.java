@@ -94,7 +94,12 @@ public class Main {
 
         do {
             PrintMenuAfterLogIn();
-             optionFromMenu=scanner.nextInt();
+            try {
+                optionFromMenu=scanner.nextInt();
+            }catch (InputMismatchException inputMismatchException){
+                System.out.println("you enter invalid value, please enter a number");
+            }
+
              optionFromMenu=invalidChoice(optionFromMenu,Constants.FIRST_OPTION_IN_MENU,Constants.LAST_OPTION_IN_USER_MENU);
             switch (optionFromMenu) {
                 case Constants.VIEW_ALL_SERIES:
